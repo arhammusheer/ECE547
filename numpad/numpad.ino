@@ -69,6 +69,10 @@ void setup()
   {
     pinMode(colPins[j], INPUT_PULLUP); // Use the internal pull-up resistor
   }
+
+  // Initialize the LEDs
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
 }
 
 void loop()
@@ -76,6 +80,7 @@ void loop()
   // 4 digit correct PIN
   char CORRECT_PIN[4] = {'1', '2', '3', '4'};
   char entered_PIN[4];
+  int i;
 
   // Get the entered PIN
   for (int i = 0; i < 4; i++)
@@ -87,10 +92,12 @@ void loop()
   // Check if the entered PIN is correct
   bool correct = true;
 
-  for (int i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++)
   {
+    delay(100); // Side channel attack demonstration
     if (entered_PIN[i] != CORRECT_PIN[i])
     {
+
       correct = false;
       break;
     }
@@ -107,9 +114,14 @@ void loop()
   }
   else
   {
-    Serial.println(" - Incorrect PIN");
+    Serial.print(" - Incorrect PIN -- Failed at digit: ");
+    Serial.println(entered_PIN[i]);
 
     // Turn on the red LED for 1 second
+    digitalWrite(LED_RED, HIGH);
+    delay(100);
+    digitalWrite(LED_RED, LOW);
+    delay(100);
     digitalWrite(LED_RED, HIGH);
     delay(1000);
     digitalWrite(LED_RED, LOW);
