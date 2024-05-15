@@ -12,7 +12,7 @@
 // Response LEDs
 #define LED_GREEN 12
 #define LED_RED 13
-
+#define PROCESSING_LED 2
 const int ROWS = 4;
 const int COLS = 4;
 
@@ -24,6 +24,11 @@ char keys[ROWS][COLS] = {
 
 int rowPins[ROWS] = {R1, R2, R3, R4};
 int colPins[COLS] = {C1, C2, C3, C4};
+
+int random(int min, int max)
+{
+  return min + rand() % (max - min + 1);
+}
 
 // This function waits for a key press and its release
 char getKey()
@@ -73,6 +78,7 @@ void setup()
   // Initialize the LEDs
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
+  pinMode(PROCESSING_LED, OUTPUT);
 }
 
 void loop()
@@ -92,9 +98,13 @@ void loop()
   // Check if the entered PIN is correct
   bool correct = true;
 
+  // Turn on the processing LED
+  digitalWrite(PROCESSING_LED, HIGH);
+
   for (i = 0; i < 4; i++)
   {
-    delay(100); // Side channel attack demonstration
+
+    delay(1); // Side channel attack demonstration
     if (entered_PIN[i] != CORRECT_PIN[i])
     {
 
@@ -103,8 +113,15 @@ void loop()
     }
   }
 
+  // Side channel defense
+  // Random delay to prevent side channel attack
+  delay(random(1, 3));
+
   if (correct)
   {
+    delay(1);
+    digitalWrite(PROCESSING_LED, LOW);
+
     Serial.println(" - Correct PIN");
 
     // Turn on the green LED for 1 second
@@ -114,6 +131,8 @@ void loop()
   }
   else
   {
+    // Turn off the processing LED
+    digitalWrite(PROCESSING_LED, LOW);
     Serial.print(" - Incorrect PIN -- Failed at digit: ");
     Serial.println(entered_PIN[i]);
 
